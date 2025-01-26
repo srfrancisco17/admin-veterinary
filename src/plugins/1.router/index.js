@@ -38,6 +38,7 @@ const router = createRouter({
       },
     }],
     ...[...pages, ...[
+      /*
       {
         path:'/productos-lista',
         name: 'productos',
@@ -46,6 +47,7 @@ const router = createRouter({
           not_authenticate: false,
         }
       }
+      */
     ]].map(route => recursiveLayouts(route)),
   ],
 })

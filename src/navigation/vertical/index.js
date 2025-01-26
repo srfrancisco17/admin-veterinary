@@ -11,7 +11,7 @@ export default [
   },
   {
     title: 'Three page',
-    to: { name: 'productos' },
+    to: { name: 'products' },
     icon: { icon: 'ri-file-text-line' },
   },
 ]
