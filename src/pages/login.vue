@@ -10,18 +10,61 @@ import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 
-const form = ref({
-  email: '',
-  password: '',
-  remember: false,
-})
-
 definePage({
   meta: {
     layout: 'blank',
     unauthenticatedOnly: true,
   },
 })
+
+const form = ref({
+  email: 'laravest@gmail.com',
+  password: '12345678',
+  remember: false,
+})
+
+const error_exists = ref(null);
+const success_exists = ref(null);
+
+const route = useRoute();
+const router = useRouter();
+
+const login = async () => {
+  try {
+
+    error_exists.value = null;
+    success_exists.value = null;
+
+    const resp = await $api('/auth/login', {
+      method: 'POST',
+      body: {
+        email: form.value.email,
+        password: form.value.password,
+      },
+      onResponseError({response}) {
+        console.log(response._data.error);
+        error_exists.value = response._data.error;
+      },
+    });
+
+    console.log(resp);
+
+    localStorage.setItem('token', resp.access_token);
+    localStorage.setItem('user', JSON.stringify(resp.user));
+
+    success_exists.value = true;
+
+    setTimeout(async() => {
+      await nextTick(() => {
+        router.replace(route.query.to ? String(route.query.to) : '/')
+      });
+    }, 1500);
+
+
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 const isPasswordVisible = ref(false)
 const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
@@ -81,7 +124,7 @@ const authV2LoginIllustration = useGenerateImageVariant(authV2LoginIllustrationL
         </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="login()">
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -105,6 +148,14 @@ const authV2LoginIllustration = useGenerateImageVariant(authV2LoginIllustrationL
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
+                <VAlert type="success" class="my-2" v-if="success_exists">
+                  Acceso correcto
+                </VAlert>
+
+                <VAlert type="error" class="my-2" v-if="error_exists">
+                  Error <strong>{{ error_exists }}</strong>
+                </VAlert>
+
                 <!-- remember me checkbox -->
                 <div class="d-flex align-center justify-space-between flex-wrap my-6 gap-x-2">
                   <VCheckbox
@@ -122,6 +173,7 @@ const authV2LoginIllustration = useGenerateImageVariant(authV2LoginIllustrationL
 
                 <!-- login button -->
                 <VBtn
+                  class="my-2"
                   block
                   type="submit"
                 >
