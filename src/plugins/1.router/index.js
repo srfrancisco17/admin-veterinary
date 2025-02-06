@@ -36,16 +36,13 @@ const router = createRouter({
       },
     }],
     ...[...pages, ...[
-      /*
       {
-        path:'/productos-lista',
-        name: 'productos',
-        component: () => import('@/pages/products.vue'),
+        path:'/roles-y-permisos',
+        name: 'roles-y-permisos',
+        component: () => import('@/pages/roles-y-permisos.vue'),
         meta: {
-          not_authenticate: false,
         }
       }
-      */
     ]].map(route => recursiveLayouts(route)),
   ],
 })
